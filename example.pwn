@@ -5,27 +5,27 @@ new TimeSinceConnect[MAX_PLAYERS], TimeSinceDeath[MAX_PLAYERS];
 
 public OnPlayerConnect(playerid)
 {
-	TimeSinceConnect[playerid] = CreatePlayerTimer(playerid);
+	TimeSinceConnect[playerid] = CreatePlayerCounter(playerid);
 	return;
 }
 
 public OnPlayerDeath(playerid, killerid, reason)
 {
 	if(IsValidPlayerTimer(TimeSinceDeath[playerid]))
-		DestroyPlayerTimer(playerid);
+		DestroyPlayerCounter(playerid);
 	
-	TimeSinceDeath[playerid] = CreatePlayerTimer(playerid);
+	TimeSinceDeath[playerid] = CreatePlayerCounter(playerid);
 	return 1;
 }
 
 public OnPlayerUpdate(playerid)
 {
 	//Kick player after being online for 10 minutes (10 * 60 = 10 minutes).
-	if(GetPlayerTimerTime(playerid, TimeSinceConnect[playerid]) > (10 * 60))
+	if(GetPlayerCounterTime(playerid, TimeSinceConnect[playerid]) > (10 * 60))
 		Kick(playerid);
 		
 	//Kill player every 5 minutes.
-	if(GetPlayerTimerTime(playerid, TimeSinceDeath[playerid]) > (5 * 60))
+	if(GetPlayerCounterTime(playerid, TimeSinceDeath[playerid]) > (5 * 60))
 		SetPlayerHealth(playerid, 0.0);
 		
 	return 1;
