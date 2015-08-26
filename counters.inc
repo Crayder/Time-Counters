@@ -7,16 +7,20 @@
 
 #define INVALID_COUNTER (-1)
 
+enum pc_CounterMode {COUNTER_MODE_SECONDS, COUNTER_MODE_MINUTES}
+
 static
 	//Player
 	Iterator:pc_pCounter[MAX_PLAYERS]<MAX_COUNTERS>,
 	pc_pTimeSet[MAX_PLAYERS][MAX_COUNTERS],
+	pc_CounterMode:pc_pMode[MAX_PLAYERS][MAX_COUNTERS],
 	//Global
 	Iterator:pc_Counter<MAX_COUNTERS>,
-	pc_TimeSet[MAX_COUNTERS];
+	pc_TimeSet[MAX_COUNTERS],
+	pc_CounterMode:pc_Mode[MAX_COUNTERS];
 
 //Player
-stock StartPlayerCounter(playerid)
+stock StartPlayerCounter(playerid, pc_CounterMode:countermode = COUNTER_MODE_SECONDS)
 {
 	if(!IsPlayerConnected(playerid))
 		return INVALID_COUNTER;
@@ -26,6 +30,7 @@ stock StartPlayerCounter(playerid)
 		return INVALID_COUNTER;
 
 	pc_pTimeSet[playerid][counterid] = gettime();
+	pc_pMode[playerid][counterid] = countermode;
 	Iter_Add(pc_pCounter[playerid], counterid);	
 	return counterid;
 }
@@ -43,22 +48,28 @@ stock StopPlayerCounter(playerid, counterid)
 stock GetPlayerCounterTime(playerid, counterid)
 {
 	if(!IsPlayerConnected(playerid) || !IsValidPlayerCounter(playerid, counterid))
-		return -1;
+		return -1;	
 		
-	return gettime() - pc_pTimeSet[playerid][counterid];
+	if(pc_pMode[playerid][counterid] == COUNTER_MODE_SECONDS)
+		return gettime() - pc_pTimeSet[playerid][counterid];
+	if(pc_pMode[playerid][counterid] == COUNTER_MODE_MINUTES)
+		return (gettime() - pc_pTimeSet[playerid][counterid]) / 60;
+	
+	return -1;
 }
 
 stock IsValidPlayerCounter(playerid, counterid)
 	return Iter_Contains(pc_pCounter[playerid], counterid) ? 1 : 0;
 
 //Global
-stock StartCounter()
+stock StartCounter(pc_CounterMode:countermode = COUNTER_MODE_SECONDS)
 {
 	new counterid = _:Iter_Free(pc_Counter);	
 	if(counterid == cellmin)
 		return INVALID_COUNTER;
 
 	pc_TimeSet[counterid] = gettime();
+	pc_Mode[playerid][counterid] = countermode;
 	Iter_Add(pc_Counter, counterid);	
 	return counterid;
 }
@@ -78,7 +89,12 @@ stock GetCounterTime(counterid)
 	if(!IsValidCounter(counterid))
 		return -1;
 		
-	return gettime() - pc_TimeSet[counterid];
+	if(pc_Mode[counterid] == COUNTER_MODE_SECONDS)
+		return gettime() - pc_TimeSet[counterid];
+	if(pc_Mode[counterid] == COUNTER_MODE_MINUTES)
+		return (gettime() - pc_TimeSet[counterid]) / 60;
+	
+	return -1;
 }
 
 stock IsValidCounter(counterid)
