@@ -1,20 +1,22 @@
 #include <a_samp>
-#include <ptimes>
+#include <counters>
+
+main(){}
 
 new TimeSinceConnect[MAX_PLAYERS], TimeSinceDeath[MAX_PLAYERS];
 
 public OnPlayerConnect(playerid)
 {
-	TimeSinceConnect[playerid] = CreatePlayerCounter(playerid);
-	return;
+	TimeSinceConnect[playerid] = StartPlayerCounter(playerid);
+	return 1;
 }
 
 public OnPlayerDeath(playerid, killerid, reason)
 {
-	if(IsValidPlayerTimer(TimeSinceDeath[playerid]))
-		DestroyPlayerCounter(playerid);
+	if(IsValidPlayerCounter(playerid, TimeSinceDeath[playerid]))
+		StopPlayerCounter(playerid, TimeSinceDeath[playerid]);
 	
-	TimeSinceDeath[playerid] = CreatePlayerCounter(playerid);
+	TimeSinceDeath[playerid] = StartPlayerCounter(playerid);
 	return 1;
 }
 
