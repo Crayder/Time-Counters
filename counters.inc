@@ -45,6 +45,15 @@ stock StopPlayerCounter(playerid, counterid)
 	return 1;
 }
 
+stock ResetPlayerCounter(playerid, counterid)
+{
+	if(!IsPlayerConnected(playerid) || !IsValidPlayerCounter(playerid, counterid))
+		return 0;
+
+	pc_pTimeSet[playerid][counterid] = gettime();	
+	return 1;
+}
+
 stock GetPlayerCounterTime(playerid, counterid)
 {
 	if(!IsPlayerConnected(playerid) || !IsValidPlayerCounter(playerid, counterid))
@@ -81,6 +90,15 @@ stock StopCounter(counterid)
 
 	pc_TimeSet[counterid] = 0;
 	Iter_Remove(pc_Counter, counterid);	
+	return 1;
+}
+
+stock ResetCounter(counterid)
+{
+	if(!IsValidCounter(counterid))
+		return 0;
+
+	pc_TimeSet[counterid] = gettime();	
 	return 1;
 }
 
